@@ -5,7 +5,7 @@ import * as path from "path";
 import { Cronjob, Status } from "src/schemas/cronjob.schema";
 import { getDaysInMonth } from "src/helpers/date-helper";
 
-const THRESHOLD = 300000
+const THRESHOLD = 10 * 1000
 
 config({
     path: path.resolve("../", "../", ".env")
@@ -26,10 +26,9 @@ async function main() {
 async function run(db: mongoose.Connection) {
     const collection = db.collection("cronjobs") as mongoose.Collection<Cronjob>;
     const cursor = await collection.find({
-        status: Status.INACTIVE
+        status: Status.ACTIVE
     });
     for (let doc = await cursor.next(); doc != null; doc = await cursor.next()) {
-        console.log(doc.next_execution.getTime() <= (new Date()).getTime());
         if(shouldRun(doc.next_execution)){
             let result = new Date();
             const millisecondsInADay = 24 * 60 * 60 * 1000;
@@ -51,7 +50,8 @@ async function run(db: mongoose.Connection) {
 
 function shouldRun(next_execution: Date): boolean {
     const currentDate = new Date()
-    if(next_execution.getTime() <= currentDate.getTime()) {
+    console.log(next_execution <= currentDate);
+    if(next_execution <= currentDate) {
         return true;
     }
     return false;
