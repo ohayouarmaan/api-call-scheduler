@@ -23,11 +23,9 @@ export class CronjobsService {
         } else {
             result = new Date(result.getTime() + parseInt(cron.scheduled_time));
         }
-        console.log(`Reuslt: ${result.getTime()} currentMinutes: ${(new Date()).getTime()} ${result <= (new Date())}`)
         return this.cronjobModel.create({
             ...cron,
             next_execution: result,
-            status: Status.ACTIVE,
         });
     }
 

@@ -27,11 +27,17 @@ export class Cronjob {
     @Prop()
     start_date: Date
 
-    @Prop({ type: String, enum: Status })
+    @Prop({ type: String, enum: Status, default: Status.ACTIVE })
     status: Status
 
     @Prop()
     next_execution: Date
+
+    @Prop({ type: Number, default: 0 })
+    number_of_executions: number
+
+    @Prop({ type: Number, default: 0 })
+    number_of_failures: number
 }
 
 export const CronjobSchema = SchemaFactory.createForClass(Cronjob);
