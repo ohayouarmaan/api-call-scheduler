@@ -21,5 +21,5 @@ export class CreateCronDto {
     @IsDate()
     @IsNotEmpty()
     @Type(() => Date)
-    start_time: Date;
+    start_date: Date;
 }

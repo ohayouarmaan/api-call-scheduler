@@ -1,9 +1,11 @@
 import { Prop, Schema, SchemaFactory } from "@nestjs/mongoose";
 import { InferSchemaType } from "mongoose";
 
-enum Status {
+export enum Status {
     INACTIVE = "INACTIVE",
     ACTIVE = "ACTIVE",
+    PAUSED = "PAUSED",
+    ARCHIVE = "ARCHIVE"
 }
 
 @Schema({
@@ -27,6 +29,9 @@ export class Cronjob {
 
     @Prop({ type: String, enum: Status })
     status: Status
+
+    @Prop()
+    next_execution: Date
 }
 
 export const CronjobSchema = SchemaFactory.createForClass(Cronjob);
