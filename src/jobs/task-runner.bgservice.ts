@@ -32,6 +32,10 @@ async function run(db: mongoose.Connection) {
         if(shouldRun(doc.next_execution)){
             let result = new Date();
             const millisecondsInADay = 24 * 60 * 60 * 1000;
+            // we will update this because if we don't then there is a possibility that some other instance might also pick this up.
+            await updateCurrentDocument(collection, doc, {
+                status: Status.TAKEN,
+            })
             if(doc.scheduled_time == "weekly") {
                 result = new Date(result.getTime() + 7 * millisecondsInADay);
             } else if(doc.scheduled_time == "monthly") {
@@ -42,10 +46,15 @@ async function run(db: mongoose.Connection) {
             //TODO: Call the provided api with the API Key, Get the output and save it in the db.
             await updateCurrentDocument(collection, doc, {
                 status: Status.ACTIVE,
-                next_execution: result
+                next_execution: result,
+                number_of_executions: doc.number_of_executions + 1
             })
         }
     }
+}
+
+function callAPI(url: string, key: string) {
+    // WIP
 }
 
 function shouldRun(next_execution: Date): boolean {
@@ -58,7 +67,9 @@ function shouldRun(next_execution: Date): boolean {
 }
 
 async function updateCurrentDocument(collection: mongoose.Collection<Cronjob>, doc: mongoose.mongo.WithId<Cronjob>, data: mongoose.mongo.MatchKeysAndValues<Cronjob>) {
-    await collection.updateOne({ _id: doc._id }, {$set: data});
+    await collection.updateOne({ _id: doc._id }, {
+        $set: data, 
+    });
 }
 
 main();

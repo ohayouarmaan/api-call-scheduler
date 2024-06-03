@@ -5,7 +5,8 @@ export enum Status {
     INACTIVE = "INACTIVE",
     ACTIVE = "ACTIVE",
     PAUSED = "PAUSED",
-    ARCHIVE = "ARCHIVE"
+    ARCHIVE = "ARCHIVE",
+    TAKEN = "TAKEN"
 }
 
 @Schema({
