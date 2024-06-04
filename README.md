@@ -9,5 +9,5 @@ services and store it in JSON format, assigning every received data with an ID a
 creation date of the cron jobs. The service should also store the history of cron job triggers
 and their responses, all with timestamps for creation and updates.
 
-Solution:
+## Solution:
 ![solution.svg](yolo-assignment.drawio.svg)
