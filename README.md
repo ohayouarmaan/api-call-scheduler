@@ -10,3 +10,4 @@ creation date of the cron jobs. The service should also store the history of cro
 and their responses, all with timestamps for creation and updates.
 
 Solution:
+![solution.svg](yolo-assignment.drawio.svg)
