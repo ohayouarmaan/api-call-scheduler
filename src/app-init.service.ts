@@ -12,8 +12,8 @@ export class AppInitService implements OnModuleInit {
         root: path.join(__dirname, "jobs"),
         jobs: [
             {
-                name: "task-runner.bgservice",
-                timeout: 0
+              name: "task-runner.bgservice",
+              timeout: 0,
             }
         ]
     })

@@ -1,6 +1,7 @@
 import { Prop, Schema, SchemaFactory } from "@nestjs/mongoose";
 import { InferSchemaType } from "mongoose";
 
+// For additional features. (still wip)
 export enum Status {
     INACTIVE = "INACTIVE",
     ACTIVE = "ACTIVE",

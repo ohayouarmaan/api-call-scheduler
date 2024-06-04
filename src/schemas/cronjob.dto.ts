@@ -1,5 +1,5 @@
 import { Type } from "class-transformer";
-import { IsDate, IsNotEmpty, IsString } from "class-validator";
+import { IsDate, IsJSON, IsNotEmpty, IsOptional, IsString } from "class-validator";
 
 export class CreateCronDto {
     @IsString()
@@ -22,4 +22,36 @@ export class CreateCronDto {
     @IsNotEmpty()
     @Type(() => Date)
     start_date: Date;
+}
+
+export class UpdateCronJobDto {
+    @IsOptional()
+    @IsString()
+    @IsNotEmpty()
+    name?: string;
+
+    @IsOptional()
+    @IsString()
+    @IsNotEmpty()
+    link?: string;
+
+    @IsOptional()
+    @IsString()
+    @IsNotEmpty()
+    api_key?: string;
+
+    @IsOptional()
+    @IsString()
+    @IsNotEmpty()
+    scheduled_time?: string;
+
+    @IsOptional()
+    @IsString()
+    @IsNotEmpty()
+    status?: string;
+
+    @IsOptional()
+    @IsDate()
+    @Type(() => Date)
+    start_date?: Date;
 }

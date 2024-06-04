@@ -4,6 +4,10 @@ import { config } from "dotenv";
 import * as path from "path";
 import { Cronjob, Status } from "src/schemas/cronjob.schema";
 import { getDaysInMonth } from "src/helpers/date-helper";
+import axios from "axios";
+import { CronjobResult } from "src/schemas/cronjobresult.schema";
+import * as Bree from "bree";
+import { updateCurrentDocument } from "src/helpers/db-helper";
 
 const THRESHOLD = 10 * 1000
 
@@ -19,7 +23,8 @@ async function main() {
             run(db.connections[0])
         }, THRESHOLD)
     } catch(e) {
-
+        console.error(`Error while running the task-runner cron: ${e}`);
+        process.exit(1);
     }
 }
 
@@ -33,7 +38,14 @@ async function run(db: mongoose.Connection) {
             let result = new Date();
             const millisecondsInADay = 24 * 60 * 60 * 1000;
             // we will update this because if we don't then there is a possibility that some other instance might also pick this up.
-            await updateCurrentDocument(collection, doc, {
+            console.log("IDDDD: ", doc._id.toHexString())
+            await updateCurrentDocument(collection, {
+                _id: doc._id.toHexString(),
+                api_key: doc.api_key,
+                link: doc.link,
+                number_of_executions: doc.number_of_executions,
+                number_of_failures: doc.number_of_failures
+            }, {
                 status: Status.TAKEN,
             })
             if(doc.scheduled_time == "weekly") {
@@ -43,18 +55,46 @@ async function run(db: mongoose.Connection) {
             } else {
                 result = new Date(result.getTime() + parseInt(doc.scheduled_time));
             }
-            //TODO: Call the provided api with the API Key, Get the output and save it in the db.
-            await updateCurrentDocument(collection, doc, {
-                status: Status.ACTIVE,
-                next_execution: result,
-                number_of_executions: doc.number_of_executions + 1
-            })
+            try{
+                // Run the API Calling in backgruond
+                const b = new Bree({
+                    root: path.resolve(__dirname, "."),
+                    jobs: [
+                        {
+                            name: "runapi.bgservice",
+                            timeout: 0,
+                            worker: {
+                                workerData: {
+                                    doc: {
+                                        _id: doc._id.toHexString(),
+                                        api_key: doc.api_key,
+                                        link: doc.link,
+                                        number_of_executions: doc.number_of_executions,
+                                        number_of_failures: doc.number_of_failures
+                                    },
+                                    next_execution: result
+                                }
+                            }
+                        }
+                    ]
+                });
+                b.start();
+            } catch(e) {
+                console.error(e);
+                process.exit(1);
+            }
         }
     }
 }
 
-function callAPI(url: string, key: string) {
+async function callAPI(url: string, key: string) {
     // WIP
+    const result = await axios.get(url, {
+        headers: {
+            Authorization: `Bearer ${key}`
+        }
+    });
+    return result;
 }
 
 function shouldRun(next_execution: Date): boolean {
@@ -64,12 +104,6 @@ function shouldRun(next_execution: Date): boolean {
         return true;
     }
     return false;
-}
-
-async function updateCurrentDocument(collection: mongoose.Collection<Cronjob>, doc: mongoose.mongo.WithId<Cronjob>, data: mongoose.mongo.MatchKeysAndValues<Cronjob>) {
-    await collection.updateOne({ _id: doc._id }, {
-        $set: data, 
-    });
 }
 
 main();

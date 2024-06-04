@@ -1,18 +1,33 @@
-import { Body, Controller, Get, Post } from "@nestjs/common";
+import { Body, Controller, Delete, Get, Param, Post, Put } from "@nestjs/common";
 import { CronjobsService } from "./cronjobs.service";
-import { CreateCronDto } from "src/schemas/cronjob.dto";
+import { CreateCronDto, UpdateCronJobDto } from "src/schemas/cronjob.dto";
 
 @Controller('cron')
 export class CronJobController {
     constructor(private cronService: CronjobsService){};
 
     @Get("/")
-    getAll() {
-        return this.cronService.getAll(); 
+    async getAll() {
+        return await this.cronService.getAll(); 
     }
 
     @Post("/create")
-    createOne(@Body() body: CreateCronDto) {
-        return this.cronService.createOne(body);
+    async createOne(@Body() body: CreateCronDto) {
+        return await this.cronService.createOne(body);
+    }
+
+    @Put(":id")
+    async updateOne(@Param() id: string, @Body() body: UpdateCronJobDto) {
+        return await this.cronService.updateOne(id, body);
+    }
+
+    @Delete(":id")
+    async deleteOne(@Param() id: string) {
+        return await this.cronService.deleteOne(id)
+    }
+
+    @Get(":id")
+    async getOne(@Param() id: string) {
+        return await this.cronService.getOne(id);
     }
 }
