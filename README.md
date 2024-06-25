@@ -10,7 +10,7 @@ creation date of the cron jobs. The service should also store the history of cro
 and their responses, all with timestamps for creation and updates.
 
 ## Solution:
-![solution.svg](yolo-assignment.drawio.svg)
+![solution.svg](infra.svg)
 
 ## Improvements Needed:
 * Use some sort of in-memory based database to save nearby schedules locally so that we don't have to read from the main database regularly, instead we can synchronize the memory based database every few minutes or something to get the updates (example: Redis)

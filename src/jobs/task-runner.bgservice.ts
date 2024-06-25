@@ -5,7 +5,7 @@ import * as path from "path";
 import { Cronjob, Status } from "src/schemas/cronjob.schema";
 import { getDaysInMonth } from "src/helpers/date-helper";
 import axios from "axios";
-import { CronjobResult } from "src/schemas/cronjobresult.schema";
+// import { CronjobResult } from "src/schemas/cronjobresult.schema";
 import * as Bree from "bree";
 import { updateCurrentDocument } from "src/helpers/db-helper";
 
